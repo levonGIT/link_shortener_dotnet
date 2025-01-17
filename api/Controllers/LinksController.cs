@@ -1,9 +1,9 @@
 ﻿using api.Data;
 using api.Dtos.Link;
 using api.Mappers;
-using api.Models;
 using api.Repository;
 using api.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,11 +15,13 @@ namespace api.Controllers
     {
         private readonly ApplicationDBContext _context;
         private readonly LinkRepository _linkRepo;
+        private readonly UserRepository _userRepo;
 
-        public LinksController(ApplicationDBContext context, LinkRepository linkRepo)
+        public LinksController(ApplicationDBContext context, LinkRepository linkRepo, UserRepository userRepo)
         {
             _context = context;
             _linkRepo = linkRepo;
+            _userRepo = userRepo;
         }
 
         [HttpPost]
@@ -38,8 +40,12 @@ namespace api.Controllers
              * База данных уже спроектирована, поэтому я оставил всё как есть
             */
             linkModel.ShortLink = $"{this.Request.Scheme}://{this.Request.Host}/{code}";
-            // TODO: Здесь необходима проверка авторизации и добавление автора ссылки при наличии
-
+            var username = Request.HttpContext.User.Identity?.Name;
+            if (username != null)
+            {
+                var user = await _userRepo.GetByLoginAsync(username);
+                linkModel.UserId = user?.Id;
+            }
             await _linkRepo.CreateAsync(linkModel);
             return Ok(linkModel.ToLinkDto());
         }
