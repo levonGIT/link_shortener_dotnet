@@ -1,0 +1,12 @@
+*.swp
+*.*~
+project.lock.json
+.DS_Store
+*.pyc
+nupkg/
+
+# Rider
+.idea/
+
+# Visual Studio
+.vs/
