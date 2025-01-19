@@ -27,7 +27,10 @@ namespace api.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateLinkRequestDto linkDto)
         {
-
+            if (!Uri.TryCreate(linkDto.OriginLink, UriKind.Absolute, out _))
+            {
+                return BadRequest("Url is invalid");
+            }
             var linkModel = linkDto.ToLinkFromCreateDTO();
             string code = LinkShortenerService.RandomString();
             while (await _linkRepo.GetByCodeAsync(code) != null)
@@ -35,10 +38,6 @@ namespace api.Controllers
                 code = LinkShortenerService.RandomString();
             }
             linkModel.Code = code;
-            /* Можно было не сохранять короткую ссылку в базу данных, а склеивать ее при выдаче,
-             * т.к. в какой то момент может смениться хост, а база остаться прежней.
-             * База данных уже спроектирована, поэтому я оставил всё как есть
-            */
             linkModel.ShortLink = $"{this.Request.Scheme}://{this.Request.Host}/{code}";
             var username = Request.HttpContext.User.Identity?.Name;
             if (username != null)

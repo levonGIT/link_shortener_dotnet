@@ -19,6 +19,12 @@ namespace api.Repository
             return links;
         }
 
+        public async Task<List<Link>> GetByUserAsync(User user)
+        {
+            var userLinks = await _context.Links.Where(l => l.UserId == user.Id).ToListAsync();
+            return userLinks;
+        }
+
         public async Task<Link?> GetByCodeAsync(string code)
         {
             return await _context.Links.FirstOrDefaultAsync(l => l.Code == code);

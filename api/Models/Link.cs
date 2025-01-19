@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Text.Json.Serialization;
 
 namespace api.Models
 {
@@ -13,6 +14,7 @@ namespace api.Models
         public int VisitCount { get; set; }
 
         public int? UserId { get; set; }
+        [JsonIgnore]
         public User? User { get; set; }
     }
 }

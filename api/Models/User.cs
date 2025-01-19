@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Text.Json.Serialization;
 
 namespace api.Models
 {
@@ -9,6 +10,7 @@ namespace api.Models
         public string Login { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
 
+        [JsonIgnore]
         public ICollection<Link> Links { get; } = new List<Link>();
     }
 }
